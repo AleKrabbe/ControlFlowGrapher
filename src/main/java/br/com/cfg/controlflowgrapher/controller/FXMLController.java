@@ -1,14 +1,15 @@
 package br.com.cfg.controlflowgrapher.controller;
 
-import br.com.cfg.controlflowgrapher.kernel.SimpleScanner;
+import br.com.cfg.controlflowgrapher.kernel.GraphGenerator;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import static guru.nidi.graphviz.model.Factory.*;
-import guru.nidi.graphviz.model.Graph;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,24 +72,24 @@ public class FXMLController implements Initializable {
     
     private static final String sampleCode = String.join("\n", new String[] {
         "class Geometria {\n" +
-        "   public static void main (String[ ] ID){}\n" +
-        "   public int Triangulo(String args[ ]){\n" +
-        "       int a;\n" +
-        "       int b;\n" +
-        "       int c;\n" +
-        "       String resp = null;\n" +
-        "       a = Integer.parseInt(args[0]);\n" +
-        "       b = Integer.parseInt(args[1]);\n" +
-        "       c = Integer.parseInt(args[2]);\n" +
-        "       if ((a==b)&&(b==c))\n" +
-        "           resp = \"equilatero\";\n" +
-        "       if (((a==b)&&(b!=c))||((b==c)&&(a!=b))||((a==c)&&(c!=b)))\n" +
-        "           resp = \"isoceles\";\n" +
-        "       if ((a!=b)&&(b!=c))\n" +
-        "           resp = \"escaleno\";\n" +
-        "       System.out.println(\"Tipo de triangulo:\"+ resp);\n" +
-        "   }\n" +
-        "}"
+                "   public static void main (String[ ] ID){}\n" +
+                "   public int Triangulo(String args[ ]){\n" +
+                "       int a;\n" +
+                "       int b;\n" +
+                "       int c;\n" +
+                "       String resp = null;\n" +
+                "       a = Integer.parseInt(args[0]);\n" +
+                "       b = Integer.parseInt(args[1]);\n" +
+                "       c = Integer.parseInt(args[2]);\n" +
+                "       if ((a==b)&&(b==c))\n" +
+                "           resp = \"equilatero\";\n" +
+                "       if (((a==b)&&(b!=c))||((b==c)&&(a!=b))||((a==c)&&(c!=b)))\n" +
+                "           resp = \"isoceles\";\n" +
+                "       if ((a!=b)&&(b!=c))\n" +
+                "           resp = \"escaleno\";\n" +
+                "       System.out.println(\"Tipo de triangulo:\"+ resp);\n" +
+                "   }\n" +
+                "}"
     });
     
     @FXML
@@ -130,12 +131,6 @@ public class FXMLController implements Initializable {
         stackPane.getChildren().add(new VirtualizedScrollPane<>(codeArea));
         codeArea.setBackground(new Background(new BackgroundFill(Paint.valueOf("#2B2B2B"), CornerRadii.EMPTY, Insets.EMPTY)));
         
-        try {
-            generateGraph();
-        } catch (IOException ex) {
-            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
     }
     
     private static StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -175,31 +170,25 @@ public class FXMLController implements Initializable {
         borderPane.setCenter(img);
     }
     
-    private void generateGraph() throws IOException {
-        graph = new File("graphs/ex19.png");
-        Graph g = graph("example19").directed().with(node("a").link(node("b").link(node("c"))).link(node("d").link(node("e").link(node("f").link("System.err.println(\"Warning: empty string as argument\");")))));
+    private Image generateGraph() throws IOException {
+        String imgName = "graph-" + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()) + ".png";
+        graph = new File("graphs/" + imgName);
+        GraphGenerator graphGen = new GraphGenerator(codeArea.getText());        ;
+        MutableGraph g = Parser.read(graphGen.generate());
         Graphviz.fromGraph(g).width(2000).render(Format.PNG).toFile(graph);
+        return new Image(graph.toURI().toURL().toExternalForm());
     }
     
-    public void handleCompile(ActionEvent event) throws MalformedURLException {
-        SimpleScanner scanner = new SimpleScanner(codeArea.getText());
-        
-        //PreParser preParser = new PreParser(codeArea.getText());
-        //try {
-            //Parser parser = new Parser(codeArea.getText(), preParser.execute());
-            //System.out.println(parser.execute(preParser.execute()));
-        //} catch (CompilerException e) {
-        //    System.err.println(e.getMessage());
-        //}
-        /*
-        try{
-            Image image = new Image(graph.toURI().toURL().toExternalForm());
+    public void handleCompile(ActionEvent event) throws MalformedURLException {     
+        try {
+            Image image = generateGraph();
             loadGraphPNG(image);
-        } catch (IllegalArgumentException e){
-            //e.printStackTrace();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException e) {
             System.out.println("File not found!");
         }
-        */
+        
     }
     
 }

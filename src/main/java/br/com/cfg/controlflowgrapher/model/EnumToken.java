@@ -62,5 +62,10 @@ public enum EnumToken
     LEXEMA,
     ASSGNOP,
     BITAND,
-    FOR
+    FOR,
+    TEXT,
+    OR,
+    BITOR,
+    NEWLINE,
+    SYSATTR
 }
