@@ -1,5 +1,6 @@
 package br.com.cfg.controlflowgrapher.controller;
 
+import br.com.cfg.controlflowgrapher.kernel.SimpleScanner;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import static guru.nidi.graphviz.model.Factory.*;
@@ -181,6 +182,8 @@ public class FXMLController implements Initializable {
     }
     
     public void handleCompile(ActionEvent event) throws MalformedURLException {
+        SimpleScanner scanner = new SimpleScanner(codeArea.getText());
+        
         //PreParser preParser = new PreParser(codeArea.getText());
         //try {
             //Parser parser = new Parser(codeArea.getText(), preParser.execute());

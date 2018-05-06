@@ -1,6 +1,5 @@
 package br.com.cfg.controlflowgrapher;
 
-import br.com.cfg.controlflowgrapher.controller.FXMLController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
@@ -13,9 +12,7 @@ public class MainApp extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent root = fxmlLoader.load(getClass().getResource("/fxml/Scene.fxml").openStream());
-        FXMLController controller = (FXMLController) fxmlLoader.getController();
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
         
         Scene scene = new Scene(root);
         scene.getStylesheets().addAll("/styles/Styles.css", "/styles/java-keywords.css");
