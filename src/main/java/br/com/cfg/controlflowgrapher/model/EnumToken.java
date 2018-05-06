@@ -61,5 +61,6 @@ public enum EnumToken
     BLOCKCOMMENT,
     LEXEMA,
     ASSGNOP,
-    BITAND
+    BITAND,
+    FOR
 }
