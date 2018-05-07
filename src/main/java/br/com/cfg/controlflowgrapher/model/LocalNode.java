@@ -15,23 +15,28 @@ public class LocalNode {
     }
     
     public void addToLines(int n){
-        if (!lines.contains(n)) {
+        if (lines.isEmpty()) {
             lines.add(n);
+        } else {
+            if (!lines.contains(n)) {
+                lines.add(n);
+            }
         }
     }
     
     public String getName() {
-        String name = "";
+        String name = "\"";
+        if (lines.size() > 2) {
+            name += lines.get(0) + "..." + lines.get(lines.size()-1);
+        } else {
         if (!lines.isEmpty()) {
-            name = String.valueOf(lines.get(0));
+            name += String.valueOf(lines.get(0));
             for(int i = 1; i < lines.size(); i++){
                 name += ", " + lines.get(i);
             }
         }
+        }
+        name += "\"";
         return name;
-    }
-    
-    public void setInitialLine (int n) {
-        lines.add(n);
     }
 }
